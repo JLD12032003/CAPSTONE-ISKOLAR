@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ISKOLar API Tester</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #0055FF;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .section h3 {
+            color: #012A4A;
+            margin-top: 0;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        button {
+            background: #0055FF;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 10px;
+        }
+        button:hover {
+            background: #0044cc;
+        }
+        .response {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 15px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .success {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+        .error {
+            border-color: #dc3545;
+            background: #f8d7da;
+        }
+        .token-display {
+            background: #e3f2fd;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 ISKOLar API Tester</h1>
+        
+        <!-- Authentication Section -->
+        <div class="section">
+            <h3>🔐 Authentication</h3>
+            
+            <div class="form-group">
+                <label>API Base URL:</label>
+                <input type="text" id="baseUrl" value="http://localhost/ISKOLAR_3RD_YEAR_EDITION/api" placeholder="http://localhost/api">
+            </div>
+            
+            <h4>Login</h4>
+            <div class="form-group">
+                <label>Email:</label>
+                <input type="email" id="loginEmail" value="admin@davaocentralcollege.edu.ph" placeholder="user@example.com">
+            </div>
+            <div class="form-group">
+                <label>Password:</label>
+                <input type="password" id="loginPassword" value="Admin@DCC2024" placeholder="password">
+            </div>
+            <button onclick="login()">Login</button>
+            <button onclick="clearToken()">Clear Token</button>
+            
+            <div id="tokenDisplay" class="token-display" style="display: none;">
+                <strong>JWT Token:</strong> <span id="tokenValue"></span>
+            </div>
+            
+            <div id="loginResponse" class="response" style="display: none;"></div>
+        </div>
+
+        <!-- Registration Section -->
+        <div class="section">
+            <h3>📝 Registration</h3>
+            
+            <div class="form-group">
+                <label>Full Name:</label>
+                <input type="text" id="regFullname" value="Test Student" placeholder="Juan Dela Cruz">
+            </div>
+            <div class="form-group">
+                <label>Email:</label>
+                <input type="email" id="regEmail" value="test@student.com" placeholder="student@example.com">
+            </div>
+            <div class="form-group">
+                <label>Password:</label>
+                <input type="password" id="regPassword" value="Test123" placeholder="password">
+            </div>
+            <div class="form-group">
+                <label>User Type:</label>
+                <select id="regUserType">
+                    <option value="student">Student</option>
+                    <option value="provider">Provider</option>
+                </select>
+            </div>
+            <button onclick="register()">Register</button>
+            
+            <div id="registerResponse" class="response" style="display: none;"></div>
+        </div>
+
+        <!-- Scholarships Section -->
+        <div class="section">
+            <h3>🎓 Scholarships</h3>
+            
+            <div class="form-group">
+                <label>Search:</label>
+                <input type="text" id="scholarshipSearch" placeholder="Search scholarships...">
+            </div>
+            <div class="form-group">
+                <label>Page:</label>
+                <input type="number" id="scholarshipPage" value="1" min="1">
+            </div>
+            <div class="form-group">
+                <label>Limit:</label>
+                <input type="number" id="scholarshipLimit" value="10" min="1" max="100">
+            </div>
+            <button onclick="getScholarships()">Get Scholarships</button>
+            <button onclick="getSchools()">Get Schools</button>
+            
+            <div id="scholarshipsResponse" class="response" style="display: none;"></div>
+        </div>
+
+        <!-- Student Profile Section -->
+        <div class="section">
+            <h3>👨‍🎓 Student Profile (Requires Student Token)</h3>
+            
+            <button onclick="getStudentProfile()">Get Profile</button>
+            <button onclick="getStudentDashboard()">Get Dashboard</button>
+            <button onclick="getStudentApplications()">Get Applications</button>
+            
+            <h4>Update Profile Phase 1</h4>
+            <div class="form-group">
+                <label>Last Name:</label>
+                <input type="text" id="lastName" value="Dela Cruz" placeholder="Last Name">
+            </div>
+            <div class="form-group">
+                <label>First Name:</label>
+                <input type="text" id="firstName" value="Juan" placeholder="First Name">
+            </div>
+            <div class="form-group">
+                <label>Birthdate:</label>
+                <input type="date" id="birthdate" value="2000-01-15">
+            </div>
+            <button onclick="updateProfilePhase1()">Update Phase 1</button>
+            
+            <div id="studentResponse" class="response" style="display: none;"></div>
+        </div>
+
+        <!-- Provider Section -->
+        <div class="section">
+            <h3>🏢 Provider (Requires Provider Token)</h3>
+            
+            <button onclick="getProviderScholarships()">Get My Scholarships</button>
+            <button onclick="getProviderApplications()">Get Applications</button>
+            <button onclick="getProviderDashboard()">Get Dashboard</button>
+            
+            <h4>Create Scholarship</h4>
+            <div class="form-group">
+                <label>Title:</label>
+                <input type="text" id="scholarshipTitle" value="Test Scholarship" placeholder="Scholarship Title">
+            </div>
+            <div class="form-group">
+                <label>Description:</label>
+                <textarea id="scholarshipDescription" placeholder="Scholarship Description">This is a test scholarship for outstanding students.</textarea>
+            </div>
+            <div class="form-group">
+                <label>Amount:</label>
+                <input type="number" id="scholarshipAmount" value="50000" placeholder="50000">
+            </div>
+            <div class="form-group">
+                <label>Slots:</label>
+                <input type="number" id="scholarshipSlots" value="10" placeholder="10">
+            </div>
+            <button onclick="createScholarship()">Create Scholarship</button>
+            
+            <div id="providerResponse" class="response" style="display: none;"></div>
+        </div>
+
+        <!-- Admin Section -->
+        <div class="section">
+            <h3>👨‍💼 Admin (Requires Admin Token)</h3>
+            
+            <button onclick="getAdminStudents()">Get Students</button>
+            <button onclick="getAdminProviders()">Get Providers</button>
+            <button onclick="getAdminScholarships()">Get Scholarships</button>
+            <button onclick="getAdminDashboard()">Get Dashboard</button>
+            
+            <div id="adminResponse" class="response" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentToken = localStorage.getItem('iskolar_api_token') || '';
+        
+        // Display token if exists
+        if (currentToken) {
+            document.getElementById('tokenDisplay').style.display = 'block';
+            document.getElementById('tokenValue').textContent = currentToken;
+        }
+
+        function getBaseUrl() {
+            return document.getElementById('baseUrl').value.replace(/\/$/, '');
+        }
+
+        function showResponse(elementId, response, isSuccess = true) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.className = `response ${isSuccess ? 'success' : 'error'}`;
+            element.textContent = JSON.stringify(response, null, 2);
+        }
+
+        function makeRequest(endpoint, method = 'GET', data = null, requireAuth = false) {
+            const url = `${getBaseUrl()}${endpoint}`;
+            const options = {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            };
+
+            if (requireAuth && currentToken) {
+                options.headers['Authorization'] = `Bearer ${currentToken}`;
+            }
+
+            if (data) {
+                options.body = JSON.stringify(data);
+            }
+
+            return fetch(url, options)
+                .then(response => response.json())
+                .catch(error => ({ success: false, message: error.message }));
+        }
+
+        // Authentication
+        async function login() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            const response = await makeRequest('/auth/login', 'POST', { email, password });
+            
+            if (response.success && response.data && response.data.token) {
+                currentToken = response.data.token;
+                localStorage.setItem('iskolar_api_token', currentToken);
+                document.getElementById('tokenDisplay').style.display = 'block';
+                document.getElementById('tokenValue').textContent = currentToken;
+            }
+            
+            showResponse('loginResponse', response, response.success);
+        }
+
+        function clearToken() {
+            currentToken = '';
+            localStorage.removeItem('iskolar_api_token');
+            document.getElementById('tokenDisplay').style.display = 'none';
+            document.getElementById('tokenValue').textContent = '';
+        }
+
+        async function register() {
+            const data = {
+                fullname: document.getElementById('regFullname').value,
+                email: document.getElementById('regEmail').value,
+                password: document.getElementById('regPassword').value,
+                user_type: document.getElementById('regUserType').value
+            };
+            
+            const response = await makeRequest('/auth/register', 'POST', data);
+            showResponse('registerResponse', response, response.success);
+        }
+
+        // Scholarships
+        async function getScholarships() {
+            const search = document.getElementById('scholarshipSearch').value;
+            const page = document.getElementById('scholarshipPage').value;
+            const limit = document.getElementById('scholarshipLimit').value;
+            
+            let endpoint = `/scholarships?page=${page}&limit=${limit}`;
+            if (search) endpoint += `&search=${encodeURIComponent(search)}`;
+            
+            const response = await makeRequest(endpoint);
+            showResponse('scholarshipsResponse', response, response.success);
+        }
+
+        async function getSchools() {
+            const response = await makeRequest('/schools');
+            showResponse('scholarshipsResponse', response, response.success);
+        }
+
+        // Student
+        async function getStudentProfile() {
+            const response = await makeRequest('/student/profile', 'GET', null, true);
+            showResponse('studentResponse', response, response.success);
+        }
+
+        async function getStudentDashboard() {
+            const response = await makeRequest('/student/dashboard', 'GET', null, true);
+            showResponse('studentResponse', response, response.success);
+        }
+
+        async function getStudentApplications() {
+            const response = await makeRequest('/student/applications', 'GET', null, true);
+            showResponse('studentResponse', response, response.success);
+        }
+
+        async function updateProfilePhase1() {
+            const data = {
+                last_name: document.getElementById('lastName').value,
+                first_name: document.getElementById('firstName').value,
+                middle_name: '',
+                suffix: '',
+                birthdate: document.getElementById('birthdate').value,
+                place_of_birth: 'Manila',
+                sex: 'Male',
+                civil_status: 'Single',
+                citizenship: 'Filipino',
+                mobile_number: '09123456789',
+                landline: '',
+                present_address: '123 Main St, Manila',
+                permanent_address: '123 Main St, Manila',
+                zip_code: '1000'
+            };
+            
+            const response = await makeRequest('/student/profile/phase/1', 'POST', data, true);
+            showResponse('studentResponse', response, response.success);
+        }
+
+        // Provider
+        async function getProviderScholarships() {
+            const response = await makeRequest('/provider/scholarships', 'GET', null, true);
+            showResponse('providerResponse', response, response.success);
+        }
+
+        async function getProviderApplications() {
+            const response = await makeRequest('/provider/applications', 'GET', null, true);
+            showResponse('providerResponse', response, response.success);
+        }
+
+        async function getProviderDashboard() {
+            const response = await makeRequest('/provider/dashboard', 'GET', null, true);
+            showResponse('providerResponse', response, response.success);
+        }
+
+        async function createScholarship() {
+            const data = {
+                title: document.getElementById('scholarshipTitle').value,
+                description: document.getElementById('scholarshipDescription').value,
+                scholarship_type: 'Full',
+                amount: parseFloat(document.getElementById('scholarshipAmount').value),
+                slots: parseInt(document.getElementById('scholarshipSlots').value),
+                application_start: '2026-05-01',
+                application_end: '2026-12-31',
+                status: 'Active'
+            };
+            
+            const response = await makeRequest('/provider/scholarships', 'POST', data, true);
+            showResponse('providerResponse', response, response.success);
+        }
+
+        // Admin
+        async function getAdminStudents() {
+            const response = await makeRequest('/admin/students', 'GET', null, true);
+            showResponse('adminResponse', response, response.success);
+        }
+
+        async function getAdminProviders() {
+            const response = await makeRequest('/admin/providers', 'GET', null, true);
+            showResponse('adminResponse', response, response.success);
+        }
+
+        async function getAdminScholarships() {
+            const response = await makeRequest('/admin/scholarships', 'GET', null, true);
+            showResponse('adminResponse', response, response.success);
+        }
+
+        async function getAdminDashboard() {
+            const response = await makeRequest('/admin/dashboard', 'GET', null, true);
+            showResponse('adminResponse', response, response.success);
+        }
+    </script>
+</body>
+</html>

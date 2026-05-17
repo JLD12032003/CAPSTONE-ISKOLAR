@@ -1,0 +1,12 @@
+
+# Deny direct access to uploaded files
+<Files *>
+    Order Deny,Allow
+    Deny from all
+</Files>
+
+# Allow access only to image files for authorized users
+<FilesMatch '\.(jpg|jpeg|png|pdf)$'>
+    Order Allow,Deny
+    Allow from all
+</FilesMatch>
